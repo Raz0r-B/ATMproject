@@ -10,136 +10,159 @@ namespace ATM
         static void Main(string[] args)
         {
 
+            //---- GetAccountNumber() ----  This bit of code returns the account number for a given pin;
+            
+            Console.Write("Enter Pin Number: ");
+            string pin = Console.ReadLine();
+
+            string connString = @"server=localhost;userid=root;password=password;database=test_atm";
+            using var con = new MySqlConnection(connString);
+            con.Open();
 
 
-            // Customer customer0 = new Customer("Brandon", "scott", "myemail@email.com", 12345);
-            //Console.WriteLine(customer0.fName);
+            
+            string returnAcct = "SELECT account_number FROM customers WHERE pin_num = @pin_num";
+            MySqlCommand getAcct = new MySqlCommand(returnAcct, con);
+
+            getAcct.Parameters.AddWithValue("@pin_num", pin);
+
+            var acctReturn = getAcct.ExecuteScalar();
+
+            Console.Write($"/n/nYour account number is: {acctReturn} ");
 
 
 
 
-            WelcomeScreen();
 
-           
+            //Close Connections
+            con.Close();
+            Console.WriteLine("\nDone\nConnection Closed");
 
-            //YOU DID IT YOU MADE A DAMN CONNECTION!
-            //NEXT WE GOTTA TEST THAT IT IS ACTUALLY CONNECTING TO THE DESIRED DATABASE
+            //---- End GetAccountNumber() -----
+
+        }
 
 
-       
-           
+
+
+
+        //YOU DID IT YOU MADE A DAMN CONNECTION!
+        //NEXT WE GOTTA TEST THAT IT IS ACTUALLY CONNECTING TO THE DESIRED DATABASE
+
+
+
+
+
+
+
+
+
+        //TODO - Return Acct Number back to customer from SQL DB, opens new window to simulate an email or something like that
+
+        public static Customer MakeNewCustomer()
+    {
+
+
+        /*          This method is designed to ask the user to input details to make them a new customer
+         *          It is very much not secure.
+         *          
+         *          TODO: Make More Secure
+         *          TODO: Send input info to the SQL database
+         *          TODO: Launch new screen showing account number
+         * 
+         */
+
+        Console.WriteLine("Welcome to the New Customer Page!");
+
+        //A pause for aesthetics
+        for (int i = 0; i < 3; i++)
+        {
+            Console.WriteLine(".");
+            System.Threading.Thread.Sleep(500);
+
+        }
+
+        int pin = 0;
+        string fName = "", lName = "", email = "";
+        bool check1 = true, check2 = true, check3 = true, check4 = true;
+        // First Name Check
+        while (check1 == true)
+        {
+
+            Console.Write("Please Enter First Name: ");
+            fName = Console.ReadLine();
+
+            if (fName.All(char.IsLetter))
+            {
+                break;
+
+            }
+            else
+            {
+                Console.WriteLine("A name can only containes letter!");
+            }
 
 
         }
 
-        //TODO - Create method that builds a new customer profile ----I think this is completed
-        //TODO - Create method that passes the customer profile into MySQL DB
-        //TODO - Return Acct Number back to customer from SQL DB, opens new window to simulate an email or something like that
-
-        public static Customer MakeNewCustomer()
+        // Last Name Check
+        while (check2 == true)
         {
 
+            Console.Write("Please Enter Last Name: ");
+            lName = Console.ReadLine();
 
-            /*          This method is designed to ask the user to input details to make them a new customer
-             *          It is very much not secure.
-             *          
-             *          TODO: Make More Secure
-             *          TODO: Send input info to the SQL database
-             *          TODO: Launch new screen showing account number
-             * 
-             */
-
-            Console.WriteLine("Welcome to the New Customer Page!");
-            
-            //A pause for aesthetics
-            for (int i = 0; i < 3; i++)
+            if (lName.All(char.IsLetter))
             {
-                Console.WriteLine(".");
-                System.Threading.Thread.Sleep(500);
+                break;
 
             }
-
-            int pin = 0;
-            string fName = "", lName = "", email = "";
-            bool check1 = true, check2 = true, check3 = true, check4 = true;
-            // First Name Check
-            while (check1 == true)
+            else
             {
-
-                    Console.Write("Please Enter First Name: ");
-                    fName = Console.ReadLine();
-
-                if (fName.All(char.IsLetter))
-                {
-                    break;
-
-                }
-                else
-                {
-                    Console.WriteLine("A name can only containes letter!");
-                }
- 
-               
-            }
-
-            // Last Name Check
-            while (check2 == true)
-            {
-
-                Console.Write("Please Enter Last Name: ");
-                lName = Console.ReadLine();
-
-                if (lName.All(char.IsLetter))
-                {
-                    break;
-
-                }
-                else
-                {
-                    Console.WriteLine("A name can only containes letter!");
-                }
-
-
-            }
-
-            // Email Check
-            while (check3 == true)
-            {
-
-                Console.Write("Please Enter Email: ");
-                email = Console.ReadLine();
-
-                if (email.Contains('@'))
-                {
-                    break;
-
-                }
-                else
-                {
-                    Console.WriteLine("Email must contain '@'");
-                }
-
-
-            }
-
-            while (check4 == true)
-            {
-                try
-                {
-                    Console.Write("Please Enter Your Desired PIN: ");
-                    pin = Convert.ToInt32(Console.ReadLine());
-                    break;
-
-                }
-
-                catch
-                {
-                    Console.WriteLine("PIN can only contain numbers");
-                    
-                }
+                Console.WriteLine("A name can only containes letter!");
             }
 
 
+        }
+
+        // Email Check
+        while (check3 == true)
+        {
+
+            Console.Write("Please Enter Email: ");
+            email = Console.ReadLine();
+
+            if (email.Contains('@'))
+            {
+                break;
+
+            }
+            else
+            {
+                Console.WriteLine("Email must contain '@'");
+            }
+
+
+        }
+
+        while (check4 == true)
+        {
+            try
+            {
+                Console.Write("Please Enter Your Desired PIN: ");
+                pin = Convert.ToInt32(Console.ReadLine());
+                break;
+
+            }
+
+            catch
+            {
+                Console.WriteLine("PIN can only contain numbers");
+
+            }
+        }
+
+    
 
     Customer newCustomer = new Customer(fName, lName, email, pin);
             CommitNewCustomer(newCustomer);
@@ -191,6 +214,8 @@ namespace ATM
 
         public static MySqlConnection SQLAccountNumCheck()
         {
+
+            //Use account number: 100046571
             //Connection String
             string connString = @"server=localhost;userid=root;password=password;database=test_atm";
             using var con = new MySqlConnection(connString);
@@ -273,7 +298,24 @@ namespace ATM
                 cmd.Parameters.AddWithValue("@pin_num", newCustomer.pin);
                 cmd.ExecuteNonQuery();
 
+/* Not Sure if this needs to be here
+ * 
+                Console.Write("/n/nYour account number is: ");
+                string returnAcct = "SELECT account_num FROM customers WHERE pin = @pin_num";
+                MySqlCommand getAcct = new MySqlCommand(returnAcct, con);
 
+                getAcct.Parameters.AddWithValue("@pin_num", newCustomer.pin);
+
+                MySqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                   
+                    Console.WriteLine(rdr[0]);
+
+                }
+                rdr.Close();
+*/
 
 
 
